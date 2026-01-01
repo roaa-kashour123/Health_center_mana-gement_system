@@ -1,0 +1,19 @@
+@startuml
+skinparam defaultFontName Tajawal
+actor المشرف as Admin
+boundary واجهة_الموظفين as UI
+control معالج_الموظفين as StaffProcessor
+database قاعدة_البيانات as DB
+
+title تسلسل إضافة موظف
+Admin -> UI : طلب \`staff.php\`
+Admin -> UI : تعبئة النموذج وإرسال البيانات
+UI -> StaffProcessor : \`addStaff(data)\`
+StaffProcessor -> DB : التحقق من عدم تكرار \`email\`
+alt البريد غير مكرر وجميع البيانات صحيحة
+    StaffProcessor -> DB : INSERT INTO staff
+    UI -> Admin : عرض رسالة نجاح وتحديث القائمة
+else خطأ في البيانات أو تكرار
+    UI -> Admin : عرض رسالة خطأ محددة
+end
+@enduml

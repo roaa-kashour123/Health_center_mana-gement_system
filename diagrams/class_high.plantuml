@@ -1,0 +1,45 @@
+@startuml
+skinparam handwritten false
+skinparam classAttributeIconSize 0
+skinparam defaultFontName Tajawal
+hide members
+
+class Admin
+class Doctor
+class Specialist
+class Staff
+class Patient
+class Article
+class Survey
+class Department
+class Ratings <<New>>
+class SurveyResponse <<New>>
+class Settings <<New>>
+class Database <<Utility>>
+
+' علاقة الاعتماد الأساسية
+Admin .up.> Database : يستخدم
+Admin .down.> Settings : يدير
+
+' علاقات الإدارة والتحكم (المشرف يدير جميع الكيانات)
+Admin .right.> Doctor : يدير
+Admin .right.> Specialist : يدير
+Admin .right.> Staff : يدير
+Admin .down.> Patient : يدير
+Admin .down.> Article : يدير
+Admin .down.> Survey : يدير
+Admin .down.> Department : يدير
+Admin .down.> Ratings : يدير
+Admin .down.> SurveyResponse : يدير
+
+' علاقات الارتباط المنطقية والصريحة
+Staff "1" -- "0..*" Survey : ينشئ
+Doctor "1" -- "0..*" Article : مؤلف
+Specialist "1" -- "0..*" Article : مؤلف
+
+' علاقات الكيانات الجديدة
+Survey "1" -- "0..*" SurveyResponse : يملك
+Patient "1" -- "0..*" Ratings : ينشئ
+Patient "1" -- "0..*" SurveyResponse : ينشئ
+
+@enduml

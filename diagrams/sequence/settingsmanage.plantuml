@@ -1,0 +1,29 @@
+@startuml
+skinparam defaultFontName Tajawal
+actor المشرف as Admin
+boundary واجهة_الإعدادات as UI
+control معالج_الإعدادات as SettingsProcessor
+database قاعدة_البيانات as DB
+
+title تسلسل إدارة إعدادات النظام
+Admin -> UI : طلب \`settings.php\`
+UI -> DB : جلب الإعدادات الحالية
+DB -> UI : إرجاع \`default_theme\`, \`center_name_ar\` الخ.
+
+' مسار تغيير الإعدادات وحفظها في DB
+group حفظ الإعدادات في قاعدة البيانات
+    Admin -> UI : تعديل الحقول والضغط على "حفظ"
+    UI -> SettingsProcessor : \`updateSettings(data)\`
+    SettingsProcessor -> DB : UPDATE settings SET value = ? WHERE key_name = ?
+    DB -> SettingsProcessor : تأكيد
+    SettingsProcessor -> UI : نجاح
+end
+
+' مسار التغيير البصري للثيم (فوري)
+group التغيير الفوري للثيم
+    Admin -> UI : تغيير قيمة حقل \`default_theme\` في \`<select>\`
+    UI -> UI : تنفيذ JavaScript (event listener)
+    UI -> UI : تحديث \`localStorage.setItem('theme', value)\`
+    UI -> UI : إضافة/إزالة فئة \`.dark-mode\` من \`body\`
+end
+@enduml

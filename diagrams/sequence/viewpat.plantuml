@@ -1,0 +1,33 @@
+@startuml
+skinparam defaultFontName Tajawal
+
+actor المشرف as Admin
+boundary واجهة_البيانات as UI
+control معالج_البيانات as DataProcessor
+database قاعدة_البيانات as DB
+
+title تسلسل عرض قائمة البيانات (المقالات/التقييمات/المرضى)
+
+' 1. طلب الصفحة
+Admin -> UI : طلب \`articles.php\` (أو reviews.php/patients.php)
+
+' 2. استدعاء دالة جلب البيانات والاتصال بالقاعدة
+UI -> DataProcessor : بدء المعالجة (استدعاء دالة الجلب)
+DataProcessor -> DB : الاتصال (\`getConnection() \` - خطوة الاتصال بالقاعدة)
+
+' 3. تنفيذ SELECT *
+note right of DataProcessor
+  تنفيذ استعلام SELECT
+  (يتضمن JOINs لمعالجة البيانات مثل اسم المؤلف/المقيّم)
+end note
+DataProcessor -> DB : \`SELECT ... FROM [الجدول] ...\`
+DB -> DataProcessor : إرجاع مجموعة النتائج (جلب مجموعة النتائج)
+
+' 4. معالجة البيانات وتكوين العرض
+DataProcessor -> DataProcessor : معالجة البيانات (تحديد اسم المؤلف/حساب العمر)
+DataProcessor -> UI : تمرير البيانات المعالجة
+
+UI -> UI : تكوين جدول العرض (HTML)
+UI -> Admin : عرض القائمة المطلوبة
+
+@enduml

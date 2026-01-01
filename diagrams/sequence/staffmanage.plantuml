@@ -1,0 +1,57 @@
+@startuml
+skinparam defaultFontName Tajawal
+
+actor المشرف as Admin
+boundary واجهة_الموظفين as UI
+control معالج_الموظفين as StaffProcessor
+database قاعدة_البيانات as DB
+
+title تسلسل إدارة الموظفين
+
+' 1. عرض قائمة الموظفين
+Admin -> UI : طلب \`staff.php\`
+UI -> StaffProcessor : جلب قائمة الموظفين
+StaffProcessor -> DB : SELECT id, full_name, status FROM staff
+DB -> StaffProcessor : إرجاع القائمة
+StaffProcessor -> UI : عرض جدول الموظفين
+
+' 2. المسارات المتفرعة (إضافة أو تعديل حالة)
+alt إضافة موظف جديد
+    Admin -> UI : النقر على "إضافة موظف جديد"
+    UI -> Admin : عرض نموذج الإضافة
+    Admin -> UI : إدخال البيانات والضغط على "إضافة الموظف"
+
+    UI -> StaffProcessor : \`addStaff(data)\`
+    StaffProcessor -> DB : التحقق من وجود البريد الإلكتروني
+    
+    alt البريد غير مستخدم والبيانات صالحة
+        DB -> StaffProcessor : لا يوجد تكرار
+        StaffProcessor -> DB : INSERT INTO staff (status = 'active')
+        DB -> StaffProcessor : تأكيد الإدراج
+        StaffProcessor -> UI : نجاح
+        UI -> Admin : عرض رسالة نجاح وتحديث القائمة
+    else خطأ في البيانات أو تكرار البريد
+        DB -> StaffProcessor : خطأ/تكرار
+        StaffProcessor -> UI : فشل
+        UI -> Admin : عرض رسالة خطأ
+    end
+end alt
+
+alt تعديل حالة موظف (تفعيل/تعليق)
+    Admin -> UI : النقر على "تعليق" أو "تفعيل" للموظف (ID=X)
+    UI -> StaffProcessor : \`changeStatus(X, action)\`
+    
+    StaffProcessor -> DB : UPDATE staff SET status = action WHERE id = X
+    
+    alt نجاح التحديث
+        DB -> StaffProcessor : تأكيد التحديث
+        StaffProcessor -> UI : نجاح
+        UI -> UI : إعادة توجيه/تحديث الصفحة
+        UI -> Admin : عرض القائمة المحدثة
+    else فشل التحديث
+        DB -> StaffProcessor : فشل
+        StaffProcessor -> UI : فشل
+        UI -> Admin : عرض رسالة خطأ
+    end
+end alt
+@enduml

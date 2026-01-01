@@ -1,0 +1,39 @@
+@startuml
+skinparam defaultFontName Tajawal
+
+actor المشرف as Admin
+boundary واجهة_المستخدم as UI
+control معالج_الدخول as LoginProcessor
+control معالج_الأطباء as DoctorsManager
+entity قاعدة_البيانات as DB
+
+title تسلسل تسجيل الدخول وتغيير حالة طبيب
+
+Admin -> UI : إدخال البريد وكلمة المرور (\`login.php\`)
+UI -> LoginProcessor : \`loginByEmail(email, password)\`
+LoginProcessor -> DB : جلب \`Admin\` بالبريد الإلكتروني
+
+alt كلمة المرور صحيحة
+  DB -> LoginProcessor : بيانات \`Admin\` الموثقة
+  LoginProcessor -> UI : نجاح الدخول (إعادة توجيه إلى \`dashboard.php\`)
+  Admin -> UI : مشاهدة لوحة التحكم
+  UI -> Admin : عرض الإحصائيات والأقسام
+  
+  Admin -> UI : طلب إدارة الأطباء (النقر على \`doctors.php\`)
+  UI -> DoctorsManager : جلب قائمة الأطباء
+  DoctorsManager -> DB : \`SELECT id, full_name, status FROM doctors\`
+  DB -> DoctorsManager : قائمة الأطباء
+  DoctorsManager -> UI : عرض القائمة
+  
+  Admin -> UI : النقر على زر "موافقة" للطبيب رقم 9 (\`?action=approve&id=9\`)
+  UI -> DoctorsManager : تحديث الحالة (\`action=approve, id=9\`)
+  DoctorsManager -> DB : \`UPDATE doctors SET status = 'approved' WHERE id = 9\`
+  DB -> DoctorsManager : تأكيد التحديث
+  DoctorsManager -> UI : إعادة توجيه إلى \`doctors.php\`
+  UI -> Admin : عرض قائمة الأطباء المحدثة
+else كلمة المرور خاطئة
+  DB -> LoginProcessor : خطأ في التوثيق
+  LoginProcessor -> UI : رسالة خطأ
+end
+
+@enduml

@@ -1,0 +1,20 @@
+@startuml
+skinparam defaultFontName Tajawal
+actor المشرف as Admin
+boundary واجهة_التقارير as UI
+control معالج_التقارير as ReportProcessor
+database قاعدة_البيانات as DB
+
+title تسلسل تصدير التقارير (CSV)
+Admin -> UI : طلب \`reports.php\`
+Admin -> UI : النقر على زر "تصدير CSV"
+UI -> ReportProcessor : \`generateCSV()\`
+ReportProcessor -> DB : جلب بيانات الملخص (\`SELECT COUNT(*)\`)
+ReportProcessor -> DB : جلب قائمة الموظفين
+ReportProcessor -> DB : جلب قائمة المرضى
+DB --> ReportProcessor : إرجاع مجموعات البيانات
+
+ReportProcessor -> ReportProcessor : تجميع وتنسيق البيانات كملف CSV
+ReportProcessor -> UI : إرسال محتوى وملف \`content-type: text/csv\`
+UI -> Admin : بدء تنزيل ملف \`report.csv\`
+@enduml

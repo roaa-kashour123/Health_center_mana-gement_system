@@ -1,0 +1,21 @@
+@startuml
+skinparam defaultFontName Tajawal
+actor المشرف as Admin
+boundary واجهة_الملف_الشخصي as UI
+control معالج_المشرف as AdminModel
+database قاعدة_البيانات as DB
+
+title تسلسل تعديل البيانات الشخصية
+Admin -> UI : طلب \`profile.php\`
+UI -> AdminModel : جلب بيانات المشرف الحالية
+AdminModel -> DB : \`SELECT\` بيانات \`Admin\`
+Admin -> UI : إدخال بيانات جديدة وطلب الحفظ
+UI -> AdminModel : \`updateProfile(newData)\`
+AdminModel -> DB : \`UPDATE admin SET ...\`
+alt نجاح التحديث
+    DB -> AdminModel : تأكيد
+    UI -> Admin : رسالة "تم التحديث بنجاح"
+else فشل التحديث
+    UI -> Admin : عرض رسالة خطأ
+end
+@enduml

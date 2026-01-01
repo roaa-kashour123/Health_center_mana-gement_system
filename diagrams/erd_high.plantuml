@@ -1,0 +1,42 @@
+@startuml
+skinparam databaseBackgroundColor White
+skinparam defaultFontName Tajawal
+hide fields
+
+entity Admin
+entity Doctor
+entity Specialist
+entity Staff
+entity Patient
+entity Article
+entity Survey
+entity Department
+entity Ratings <<New>>
+entity SurveyResponse <<New>>
+entity Settings <<New>>
+
+' 1. Staff - Survey (1:M)
+Staff "1" -- "0..*" Survey : ينشئ
+
+' 2. Author - Article (Polymorphic)
+Doctor "1" -- "0..*" Article : مؤلف
+Specialist "1" -- "0..*" Article : مؤلف
+
+' 3. New Entities Relations
+Survey "1" -- "0..*" SurveyResponse : يملك
+Patient "1" -- "0..*" Ratings : ينشئ
+Patient "1" -- "0..*" SurveyResponse : ينشئ
+
+' 4. Admin Management (Conceptual)
+Admin ..> Doctor
+Admin ..> Specialist
+Admin ..> Staff
+Admin ..> Patient
+Admin ..> Article
+Admin ..> Survey
+Admin ..> Department
+Admin ..> Ratings
+Admin ..> SurveyResponse
+Admin ..> Settings
+
+@enduml

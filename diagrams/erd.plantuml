@@ -1,0 +1,87 @@
+@startuml
+skinparam databaseBackgroundColor White
+skinparam defaultFontName Tajawal
+
+entity Admin {
+  *id : int
+  --
+  username : varchar
+  email : varchar
+  password : varchar
+  full_name : varchar
+}
+
+entity Doctor {
+  *id : int
+  --
+  full_name : varchar
+  specialization : varchar
+  status : enum
+}
+
+entity Specialist {
+  *id : int
+  --
+  full_name : varchar
+  field : varchar
+  status : enum
+}
+
+entity Staff {
+  *id : int
+  --
+  full_name : varchar
+  position : varchar
+  status : enum
+}
+
+entity Patient {
+  *id : int
+  --
+  full_name : varchar
+  dob : date
+}
+
+entity Article {
+  *id : int
+  --
+  title : varchar
+  author_id : int <<FK>>
+  author_type : enum
+}
+
+entity Survey {
+  *id : int
+  --
+  title : varchar
+  created_by : int <<FK>>
+}
+
+entity Ratings <<New>> {
+  *id : int
+  --
+  patient_id : int <<FK>>
+  entity_id : int
+  entity_type : enum('doctor','specialist','center')
+  rating : int
+  comment : text
+}
+
+entity SurveyResponse <<New>> {
+  *id : int
+  --
+  survey_id : int <<FK>>
+  patient_id : int <<FK>>
+  response_text : text
+}
+
+' Relations
+Staff "1" -- "0..*" Survey : created_by >
+Survey "1" -- "0..*" SurveyResponse : survey_id >
+Patient "1" -- "0..*" Ratings : patient_id >
+Patient "1" -- "0..*" SurveyResponse : patient_id >
+
+Doctor "1" -- "0..*" Article : مؤلف
+Specialist "1" -- "0..*" Article : مؤلف
+
+@enduml

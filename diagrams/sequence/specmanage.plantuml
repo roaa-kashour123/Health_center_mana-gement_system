@@ -1,0 +1,17 @@
+@startuml
+skinparam defaultFontName Tajawal
+actor المشرف as Admin
+boundary واجهة_الأطباء as UI
+control معالج_الحالة as StatusProcessor
+database قاعدة_البيانات as DB
+
+title تسلسل تغيير حالة أخصائي
+Admin -> UI : طلب \`specialists.php\`
+UI -> StatusProcessor : جلب قائمة الأخصائيين
+StatusProcessor -> DB : \`SELECT\` القائمة
+Admin -> UI : النقر على "موافقة" للأخصائي رقم X
+UI -> StatusProcessor : \`changeStatus(X, 'approved')\`
+StatusProcessor -> DB : UPDATE specialists SET status = 'approved' WHERE id = X
+UI -> UI : إعادة تحميل الصفحة
+UI -> Admin : عرض القائمة المحدثة
+@enduml

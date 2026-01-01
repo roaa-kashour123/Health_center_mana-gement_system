@@ -1,0 +1,22 @@
+@startuml
+skinparam defaultFontName Tajawal
+actor المشرف as Admin
+boundary واجهة_المستخدم as UI
+control معالج_التوثيق as AdminModel
+database قاعدة_البيانات as DB
+
+title تسلسل تسجيل الدخول
+Admin -> UI : إدخال \`email\` و \`password\`
+UI -> AdminModel : \`loginByEmail(email, password)\`
+AdminModel -> DB : \`SELECT\` بيانات المشرف
+alt نجاح التوثيق
+    DB -> AdminModel : إرجاع البيانات
+    AdminModel -> UI : نجاح
+    UI -> UI : إنشاء جلسة PHP
+    UI -> Admin : إعادة توجيه إلى لوحة التحكم
+else فشل التوثيق
+    DB -> AdminModel : خطأ في التوثيق
+    AdminModel -> UI : فشل
+    UI -> Admin : عرض رسالة خطأ
+end
+@enduml

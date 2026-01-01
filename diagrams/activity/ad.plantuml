@@ -1,0 +1,68 @@
+@startuml
+skinparam defaultFontName Tajawal
+
+start
+
+partition "تسجيل الدخول (login.php)" {
+  :إدخال البريد وكلمة المرور;
+  if (البيانات صحيحة؟) then (نعم)
+    :تسجيل الجلسة;
+    :الذهاب إلى لوحة التحكم;
+  else (لا)
+    :عرض رسالة خطأ;
+    :إعادة المحاولة;
+  endif
+}
+
+:لوحة التحكم (dashboard.php);
+
+partition "إدارة البيانات الرئيسية" {
+  fork
+    :إدارة الأطباء (doctors.php);
+    :عرض قائمة الأطباء;
+    if (طلب تغيير حالة؟) then (نعم)
+      :تحديث حالة الطبيب (موافقة/تعليق/رفض);
+    endif
+  fork again
+    :إدارة الأخصائيين (specialists.php);
+    :عرض قائمة الأخصائيين;
+    if (طلب تغيير حالة؟) then (نعم)
+      :تحديث حالة الأخصائي;
+    endif
+  fork again
+    :إدارة الموظفين (staff.php);
+    :عرض قائمة الموظفين;
+    if (طلب إضافة موظف؟) then (نعم)
+      :إضافة موظف جديد;
+    endif
+    if (طلب تعليق/تفعيل؟) then (نعم)
+      :تحديث حالة الموظف;
+    endif
+  end fork
+}
+
+partition "المعلومات والتقارير" {
+  fork
+    :عرض قائمة المرضى (patients.php);
+  fork again
+    :عرض المقالات (articles.php);
+  fork again
+    :عرض الاستبيانات (surveys.php);
+  fork again
+    :تقارير النظام (reports.php);
+    if (طلب تصدير CSV؟) then (نعم)
+      :تجميع البيانات;
+      :تصدير ملف CSV;
+    endif
+  end fork
+}
+
+partition "ملف المشرف الشخصي (profile.php)" {
+  :تعديل المعلومات الشخصية;
+  :تغيير كلمة المرور;
+}
+
+:تسجيل الخروج (logout.php);
+
+stop
+@enduml

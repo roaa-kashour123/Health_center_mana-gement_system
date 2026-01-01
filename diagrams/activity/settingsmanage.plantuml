@@ -1,0 +1,26 @@
+@startuml
+skinparam defaultFontName Tajawal
+start
+:طلب \`settings.php\`;
+:جلب الإعدادات الحالية من جدول \`settings\`;
+:عرض القيم في نماذج \`Form\`;
+
+fork
+    partition "تعديل إعدادات" {
+        :تعديل \`name\` أو \`theme\` أو \`invoice_format\`;
+        :الضغط على حفظ;
+        if (البيانات صالحة؟) then (نعم)
+            :تحديث السجل في جدول \`settings\`;
+            :عرض رسالة نجاح;
+        else (لا)
+            :عرض رسالة خطأ;
+        endif
+    }
+fork again
+    partition "تغيير الوضع اللحظي" {
+        :تغيير قيمة قائمة اختيار الثيم (\`default_theme\`);
+        :تحديث \`localStorage\` وتطبيق فئة \`.dark-mode\` على \`body\`;
+    }
+end fork
+stop
+@enduml
